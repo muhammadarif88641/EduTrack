@@ -30,10 +30,19 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 // EduTrack Admin Dashboard
 Route::middleware(['auth', 'role:admin'])
     ->get('/admin/dashboard', function () {
         return view('dashboards.admin');
     })
     ->name('admin.dashboard');
+
+// EduTrack Lecturer Dashboard
+Route::middleware(['auth', 'role:lecturer'])
+    ->get('/lecturer/dashboard', function () {
+        return view('dashboards.lecturer');
+    })
+    ->name('lecturer.dashboard');
+    
 require __DIR__.'/auth.php';
