@@ -9,46 +9,57 @@ use Illuminate\View\View;
 
 class StudentApprovalController extends Controller
 {
-    // Display all pending students
     public function index(): View
     {
-        $students = User::where('role', 'student')
+        $pendingStudents = User::where('role', 'student')
             ->where('account_status', 'pending')
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->get();
 
-        return view('admin.students.index', compact('students'));
+        $approvedStudents = User::where('role', 'student')
+            ->where('account_status', 'approved')
+            ->latest()
+            ->get();
+
+        $rejectedStudents = User::where('role', 'student')
+            ->where('account_status', 'rejected')
+            ->latest()
+            ->get();
+
+        return view('admin.students.index', compact(
+            'pendingStudents',
+            'approvedStudents',
+            'rejectedStudents'
+        ));
     }
 
-    // Approve a student
     public function approve(User $student): RedirectResponse
     {
-        abort_unless(
-            $student->role === 'student' &&
-            $student->account_status === 'pending',
-            404
-        );
+        if ($student->role !== 'student' ||
+            !in_array($student->account_status, ['pending', 'rejected'])) {
+            abort(403);
+        }
 
         $student->account_status = 'approved';
         $student->save();
 
-        return redirect()->route('admin.students.index')
+        return redirect()
+            ->route('admin.students.index', ['tab' => 'approved'])
             ->with('success', 'Student approved successfully.');
     }
 
-    // Reject a student
     public function reject(User $student): RedirectResponse
     {
-        abort_unless(
-            $student->role === 'student' &&
-            $student->account_status === 'pending',
-            404
-        );
+        if ($student->role !== 'student' ||
+            $student->account_status !== 'pending') {
+            abort(403);
+        }
 
         $student->account_status = 'rejected';
         $student->save();
 
-        return redirect()->route('admin.students.index')
+        return redirect()
+            ->route('admin.students.index', ['tab' => 'rejected'])
             ->with('success', 'Student rejected successfully.');
     }
 }

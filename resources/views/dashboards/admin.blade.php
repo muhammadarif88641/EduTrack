@@ -24,10 +24,22 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">Student Approval</h3>
-                        <p>Approve or reject new student accounts.</p>
-                    </div>
+                   <a href="{{ route('admin.students.index') }}"
+   class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+
+    <h3 class="font-bold text-blue-700">
+        Student Approval
+    </h3>
+
+    <p class="text-gray-600">
+        Approve or reject new student accounts.
+    </p>
+
+    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
+        Manage Students →
+    </span>
+
+</a>
 
                     <div class="border rounded-lg p-4">
                         <h3 class="font-bold">Course Approval</h3>
