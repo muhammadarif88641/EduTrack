@@ -2,6 +2,23 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\StudentApprovalController;
+
+// Admin Student Approval Routes
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::get('/students', [StudentApprovalController::class, 'index'])
+            ->name('students.index');
+
+        Route::patch('/students/{student}/approve', [StudentApprovalController::class, 'approve'])
+            ->name('students.approve');
+
+        Route::patch('/students/{student}/reject', [StudentApprovalController::class, 'reject'])
+            ->name('students.reject');
+    });
 
 Route::get('/', function () {
     return view('welcome');
@@ -51,5 +68,5 @@ Route::middleware(['auth', 'role:student'])
         return view('dashboards.student');
     })
     ->name('student.dashboard');
-    
+
 require __DIR__.'/auth.php';
