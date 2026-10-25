@@ -44,5 +44,12 @@ Route::middleware(['auth', 'role:lecturer'])
         return view('dashboards.lecturer');
     })
     ->name('lecturer.dashboard');
+
+    // EduTrack Student Dashboard
+Route::middleware(['auth', 'role:student'])
+    ->get('/student/dashboard', function () {
+        return view('dashboards.student');
+    })
+    ->name('student.dashboard');
     
 require __DIR__.'/auth.php';
