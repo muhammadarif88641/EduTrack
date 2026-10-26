@@ -16,7 +16,7 @@
                 </a>
 
                 <a href="{{ route('lecturer.courses.create') }}"
-                class="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
+                   class="inline-block px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition">
                     + Create New Course
                 </a>
             </div>
@@ -40,6 +40,7 @@
                                 <th class="p-3">Course Name</th>
                                 <th class="p-3">Description</th>
                                 <th class="p-3">Status</th>
+                                <th class="p-3">Action</th>
                             </tr>
                         </thead>
 
@@ -73,10 +74,17 @@
                                             </span>
                                         @endif
                                     </td>
+
+                                    <td class="p-3">
+                                        <a href="{{ route('lecturer.materials.index', $course->id) }}"
+                                           class="inline-block px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
+                                            Manage Materials
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4"
+                                    <td colspan="5"
                                         class="p-6 text-center text-gray-500">
                                         No courses created yet.
                                     </td>

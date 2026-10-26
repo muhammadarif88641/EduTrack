@@ -4,6 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+
+
 
 class Course extends Model
 {
@@ -18,5 +22,11 @@ class Course extends Model
     public function lecturer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'lecturer_id');
+    }
+
+     // A course can have many learning materials
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class);
     }
 }

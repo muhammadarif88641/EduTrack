@@ -60,10 +60,24 @@
                         </a>
 
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">Enrollment Requests</h3>
-                        <p>Manage student requests to join courses.</p>
-                    </div>
+                    
+        <a href="{{ route('admin.enrollments.index') }}"
+        class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+
+            <h3 class="font-bold text-blue-700">
+                Enrollment Requests
+            </h3>
+
+            <p class="text-gray-600">
+                Manage student requests to join courses.
+            </p>
+
+            <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
+                Manage Enrollments →
+            </span>
+
+        </a>
+
 
                     <div class="border rounded-lg p-4">
                         <h3 class="font-bold">Master Reset</h3>

@@ -7,6 +7,9 @@ use App\Http\Controllers\Admin\StudentApprovalController;
 use App\Http\Controllers\Admin\CourseApprovalController;
 use App\Http\Controllers\Lecturer\CourseController;
 use App\Http\Controllers\Student\EnrollmentController;
+use App\Http\Controllers\Admin\EnrollmentApprovalController;
+use App\Http\Controllers\Lecturer\MaterialController;
+
 
 // Welcome Page
 Route::get('/', function () {
@@ -75,6 +78,16 @@ Route::middleware(['auth', 'role:admin'])
 
         Route::patch('/courses/{course}/reject', [CourseApprovalController::class, 'reject'])
             ->name('courses.reject');
+
+            // Enrollment Approval
+        Route::get('/enrollments', [EnrollmentApprovalController::class, 'index'])
+            ->name('enrollments.index');
+
+        Route::patch('/enrollments/{enrollment}/approve', [EnrollmentApprovalController::class, 'approve'])
+            ->name('enrollments.approve');
+
+        Route::patch('/enrollments/{enrollment}/reject', [EnrollmentApprovalController::class, 'reject'])
+            ->name('enrollments.reject');
     });
 
 // LECTURER ROUTES
@@ -98,6 +111,23 @@ Route::middleware(['auth', 'role:lecturer'])
 
         Route::post('/courses', [CourseController::class, 'store'])
             ->name('courses.store');
+        
+        // Lecturer Learning Materials
+        // View materials for a course
+        Route::get('/courses/{course}/materials',
+            [MaterialController::class, 'index'])
+            ->name('materials.index');
+
+        // Open upload material form
+        Route::get('/courses/{course}/materials/create',
+            [MaterialController::class, 'create'])
+            ->name('materials.create');
+
+        // Save uploaded material
+        Route::post('/courses/{course}/materials',
+            [MaterialController::class, 'store'])
+            ->name('materials.store');
+
     });
 
 // STUDENT ROUTES
@@ -119,6 +149,27 @@ Route::middleware(['auth', 'role:student'])
         // Request enrollment in a course
         Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])
             ->name('courses.enroll');
+
+         // Show courses the student has successfully enrolled in
+        Route::get('/my-classes', [EnrollmentController::class, 'myClasses'])
+            ->name('classes.index');
+
+        
+        // Student views learning materials
+        Route::get('/courses/{course}/materials',
+            [EnrollmentController::class, 'materials'])
+            ->name('materials.index');
+
+        // Student downloads PDF materials
+        Route::get('/materials/{material}/download',
+            [EnrollmentController::class, 'downloadMaterial'])
+            ->name('materials.download');
+        
+        // Student views PDF directly in browser
+        Route::get('/materials/{material}/view',
+            [EnrollmentController::class, 'viewMaterial'])
+            ->name('materials.view');
+
     });
 
 // Laravel Authentication Routes

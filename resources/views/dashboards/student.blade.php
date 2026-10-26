@@ -42,10 +42,23 @@
                 </a>
 
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">My Classes</h3>
-                        <p>View courses you have joined.</p>
-                    </div>
+                    
+                <a href="{{ route('student.classes.index') }}"
+                class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+
+                    <h3 class="font-bold text-blue-700">
+                        My Classes
+                    </h3>
+
+                    <p class="text-gray-600">
+                        View courses you have joined.
+                    </p>
+
+                    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
+                        View My Classes →
+                    </span>
+
+                </a>
 
                     <div class="border rounded-lg p-4">
                         <h3 class="font-bold">My Assignments</h3>
