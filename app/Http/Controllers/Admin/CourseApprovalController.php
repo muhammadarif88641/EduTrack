@@ -3,70 +3,70 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Enrollment;
+use App\Models\Course;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CourseApprovalController extends Controller
 {
-    // Display enrollment requests
+    // Display courses based on their approval status
     public function index(): View
     {
-        $pendingEnrollments = Enrollment::with(['student', 'course'])
+        $pendingCourses = Course::with('lecturer')
             ->where('status', 'pending')
             ->latest()
             ->get();
 
-        $approvedEnrollments = Enrollment::with(['student', 'course'])
+        $approvedCourses = Course::with('lecturer')
             ->where('status', 'approved')
             ->latest()
             ->get();
 
-        $rejectedEnrollments = Enrollment::with(['student', 'course'])
+        $rejectedCourses = Course::with('lecturer')
             ->where('status', 'rejected')
             ->latest()
             ->get();
 
-        return view('admin.enrollments.index', compact(
-            'pendingEnrollments',
-            'approvedEnrollments',
-            'rejectedEnrollments'
+        return view('admin.courses.index', compact(
+            'pendingCourses',
+            'approvedCourses',
+            'rejectedCourses'
         ));
     }
 
-    // Approve an enrollment request
-    public function approve(Enrollment $enrollment): RedirectResponse
+    // Approve a course created by a lecturer
+    public function approve(Course $course): RedirectResponse
     {
-        if (!in_array($enrollment->status, ['pending', 'rejected'])) {
+        if (!in_array($course->status, ['pending', 'rejected'])) {
             return redirect()
-                ->route('admin.enrollments.index')
-                ->with('error', 'This enrollment cannot be approved.');
+                ->route('admin.courses.index')
+                ->with('error', 'This course cannot be approved.');
         }
 
-        $enrollment->update([
+        $course->update([
             'status' => 'approved',
         ]);
 
         return redirect()
-            ->route('admin.enrollments.index', ['tab' => 'approved'])
-            ->with('success', 'Enrollment approved successfully.');
+            ->route('admin.courses.index', ['tab' => 'approved'])
+            ->with('success', 'Course approved successfully.');
     }
 
-    // Reject an enrollment request
-    public function reject(Enrollment $enrollment): RedirectResponse
+    // Reject a pending course
+    public function reject(Course $course): RedirectResponse
     {
-        if ($enrollment->status !== 'pending') {
+        if ($course->status !== 'pending') {
             return redirect()
-                ->route('admin.enrollments.index')
-                ->with('error', 'Only pending enrollments can be rejected.');
+                ->route('admin.courses.index')
+                ->with('error', 'Only pending courses can be rejected.');
         }
 
-        $enrollment->update([
+        $course->update([
             'status' => 'rejected',
         ]);
 
         return redirect()
-            ->route('admin.enrollments.index', ['tab' => 'rejected'])
-            ->with('success', 'Enrollment rejected successfully.');
+            ->route('admin.courses.index', ['tab' => 'rejected'])
+            ->with('success', 'Course rejected successfully.');
     }
 }
