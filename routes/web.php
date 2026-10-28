@@ -9,7 +9,8 @@ use App\Http\Controllers\Lecturer\CourseController;
 use App\Http\Controllers\Student\EnrollmentController;
 use App\Http\Controllers\Admin\EnrollmentApprovalController;
 use App\Http\Controllers\Lecturer\MaterialController;
-
+use App\Http\Controllers\Lecturer\AssignmentController;
+use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 
 // Welcome Page
 Route::get('/', function () {
@@ -127,6 +128,20 @@ Route::middleware(['auth', 'role:lecturer'])
         Route::post('/courses/{course}/materials',
             [MaterialController::class, 'store'])
             ->name('materials.store');
+        
+        // Lecturer Assignment Management
+        Route::get('/courses/{course}/assignments',
+            [AssignmentController::class, 'index'])
+            ->name('assignments.index');
+
+        Route::get('/courses/{course}/assignments/create',
+            [AssignmentController::class, 'create'])
+            ->name('assignments.create');
+
+        Route::post('/courses/{course}/assignments',
+            [AssignmentController::class, 'store'])
+            ->name('assignments.store');
+
 
     });
 
@@ -159,6 +174,12 @@ Route::middleware(['auth', 'role:student'])
         Route::get('/courses/{course}/materials',
             [EnrollmentController::class, 'materials'])
             ->name('materials.index');
+        
+        // Student views assignments for an enrolled course
+        Route::get('/courses/{course}/assignments',
+            [StudentAssignmentController::class, 'index'])
+            ->name('assignments.index');
+
 
         // Student downloads PDF materials
         Route::get('/materials/{material}/download',

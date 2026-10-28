@@ -76,11 +76,20 @@
                                     </td>
 
                                     <td class="p-3">
-                                        <a href="{{ route('lecturer.materials.index', $course->id) }}"
-                                           class="inline-block px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
-                                            Manage Materials
-                                        </a>
-                                    </td>
+    <div class="flex flex-wrap gap-2">
+
+        <a href="{{ route('lecturer.materials.index', $course->id) }}"
+           class="inline-block px-4 py-2 bg-gray-800 text-white text-sm rounded-lg hover:bg-gray-700 transition whitespace-nowrap">
+            Manage Materials
+        </a>
+
+        <a href="{{ route('lecturer.assignments.index', $course->id) }}"
+           class="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
+            Manage Assignments
+        </a>
+
+    </div>
+</td>
                                 </tr>
                             @empty
                                 <tr>
