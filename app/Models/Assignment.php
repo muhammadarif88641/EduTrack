@@ -14,6 +14,7 @@ class Assignment extends Model
         'instructions',
         'max_marks',
         'due_date',
+        'week_number',
     ];
 
     protected $casts = [
@@ -26,7 +27,7 @@ class Assignment extends Model
     }
 
     public function submissions(): HasMany
-{
-    return $this->hasMany(Submission::class);
-}
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

@@ -54,7 +54,6 @@
                                value="{{ old('title') }}"
                                required
                                class="w-full border-gray-300 rounded">
-
                     </div>
 
                     <div class="mb-4">
@@ -66,6 +65,32 @@
                                   name="description"
                                   rows="4"
                                   class="w-full border-gray-300 rounded">{{ old('description') }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="week_number" class="block font-semibold mb-2">
+                            Teaching Week
+                        </label>
+
+                        <select id="week_number"
+                                name="week_number"
+                                required
+                                class="w-full border-gray-300 rounded">
+
+                            @for($week = 1; $week <= 14; $week++)
+                                <option value="{{ $week }}"
+                                    {{ old('week_number', 1) == $week ? 'selected' : '' }}>
+                                    Week {{ $week }}
+                                </option>
+                            @endfor
+
+                        </select>
+
+                        @error('week_number')
+                            <p class="text-red-600 text-sm mt-1">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                     <div class="mb-6">

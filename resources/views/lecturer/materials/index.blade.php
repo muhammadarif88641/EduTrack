@@ -51,40 +51,74 @@
                 @endif
 
                 <h4 class="font-bold text-lg mt-8 mb-4">
-                    Uploaded Materials
+                    Weekly Learning Materials
                 </h4>
 
                 @if($materials->isEmpty())
+
                     <p class="text-gray-600">
                         No learning materials have been uploaded yet.
                     </p>
+
                 @else
+
+                    @php
+                        $weeklyMaterials = $materials->groupBy('week_number');
+                    @endphp
+
                     <div class="space-y-4">
 
-                        @foreach($materials as $material)
-                            <div class="border rounded-lg p-4">
+                        @for($week = 1; $week <= 14; $week++)
 
-                                <h5 class="font-bold text-gray-800">
-                                    {{ $material->title }}
-                                </h5>
+                            <details class="border rounded-lg overflow-hidden"
+                                     {{ $week == 1 ? 'open' : '' }}>
 
-                                <p class="text-gray-600 mt-2">
-                                    {{ $material->description ?: 'No description provided.' }}
-                                </p>
+                                <summary class="bg-gray-100 p-4 font-bold cursor-pointer hover:bg-gray-200">
+                                    Week {{ $week }}
+                                    ({{ $weeklyMaterials->get($week, collect())->count() }} Materials)
+                                </summary>
 
-                                <p class="text-sm text-gray-500 mt-3">
-                                    File: {{ $material->original_filename }}
-                                </p>
+                                <div class="p-4 space-y-4">
 
-                                <p class="text-sm text-gray-500 mt-1">
-                                    Uploaded:
-                                    {{ $material->created_at->format('d M Y, h:i A') }}
-                                </p>
+                                    @forelse($weeklyMaterials->get($week, collect()) as $material)
 
-                            </div>
-                        @endforeach
+                                        <div class="border rounded-lg p-4">
+
+                                            <h5 class="font-bold text-gray-800">
+                                                {{ $material->title }}
+                                            </h5>
+
+                                            <p class="text-gray-600 mt-2">
+                                                {{ $material->description ?: 'No description provided.' }}
+                                            </p>
+
+                                            <p class="text-sm text-gray-500 mt-3">
+                                                File: {{ $material->original_filename }}
+                                            </p>
+
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                Uploaded:
+                                                {{ $material->created_at->format('d M Y, h:i A') }}
+                                            </p>
+
+                                        </div>
+
+                                    @empty
+
+                                        <p class="text-gray-500">
+                                            No materials for this week.
+                                        </p>
+
+                                    @endforelse
+
+                                </div>
+
+                            </details>
+
+                        @endfor
 
                     </div>
+
                 @endif
 
             </div>

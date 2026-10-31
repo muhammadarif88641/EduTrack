@@ -25,6 +25,7 @@
                                value="{{ old('title') }}"
                                required
                                class="w-full border-gray-300 rounded-lg">
+
                         @error('title')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -39,7 +40,31 @@
                                   rows="5"
                                   required
                                   class="w-full border-gray-300 rounded-lg">{{ old('instructions') }}</textarea>
+
                         @error('instructions')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium mb-2">
+                            Teaching Week
+                        </label>
+
+                        <select name="week_number"
+                                required
+                                class="w-full border-gray-300 rounded-lg">
+
+                            @for($week = 1; $week <= 14; $week++)
+                                <option value="{{ $week }}"
+                                    {{ old('week_number', 1) == $week ? 'selected' : '' }}>
+                                    Week {{ $week }}
+                                </option>
+                            @endfor
+
+                        </select>
+
+                        @error('week_number')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
@@ -55,6 +80,7 @@
                                value="{{ old('max_marks') }}"
                                required
                                class="w-full border-gray-300 rounded-lg">
+
                         @error('max_marks')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -69,6 +95,7 @@
                                name="due_date"
                                value="{{ old('due_date') }}"
                                class="w-full border-gray-300 rounded-lg">
+
                         @error('due_date')
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror

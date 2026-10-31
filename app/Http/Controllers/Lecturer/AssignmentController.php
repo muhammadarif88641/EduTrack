@@ -17,6 +17,7 @@ class AssignmentController extends Controller
         abort_if($course->lecturer_id !== Auth::id(), 403);
 
         $assignments = $course->assignments()
+            ->orderBy('week_number')
             ->latest()
             ->get();
 
@@ -41,6 +42,7 @@ class AssignmentController extends Controller
             'instructions' => 'required|string',
             'max_marks' => 'required|integer|min:1',
             'due_date' => 'nullable|date',
+            'week_number' => 'required|integer|between:1,14',
         ]);
 
         $course->assignments()->create($validated);
