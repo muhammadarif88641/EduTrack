@@ -13,6 +13,7 @@ use App\Http\Controllers\Lecturer\AssignmentController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
 use App\Http\Controllers\Student\SubmissionController;
 use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissionController;
+use App\Http\Controllers\Lecturer\ProgressController;
 
 // Welcome Page
 Route::get('/', function () {
@@ -65,30 +66,37 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/students', [StudentApprovalController::class, 'index'])
             ->name('students.index');
 
-        Route::patch('/students/{student}/approve', [StudentApprovalController::class, 'approve'])
+        Route::patch('/students/{student}/approve',
+            [StudentApprovalController::class, 'approve'])
             ->name('students.approve');
 
-        Route::patch('/students/{student}/reject', [StudentApprovalController::class, 'reject'])
+        Route::patch('/students/{student}/reject',
+            [StudentApprovalController::class, 'reject'])
             ->name('students.reject');
 
         // Course Approval
         Route::get('/courses', [CourseApprovalController::class, 'index'])
             ->name('courses.index');
 
-        Route::patch('/courses/{course}/approve', [CourseApprovalController::class, 'approve'])
+        Route::patch('/courses/{course}/approve',
+            [CourseApprovalController::class, 'approve'])
             ->name('courses.approve');
 
-        Route::patch('/courses/{course}/reject', [CourseApprovalController::class, 'reject'])
+        Route::patch('/courses/{course}/reject',
+            [CourseApprovalController::class, 'reject'])
             ->name('courses.reject');
 
         // Enrollment Approval
-        Route::get('/enrollments', [EnrollmentApprovalController::class, 'index'])
+        Route::get('/enrollments',
+            [EnrollmentApprovalController::class, 'index'])
             ->name('enrollments.index');
 
-        Route::patch('/enrollments/{enrollment}/approve', [EnrollmentApprovalController::class, 'approve'])
+        Route::patch('/enrollments/{enrollment}/approve',
+            [EnrollmentApprovalController::class, 'approve'])
             ->name('enrollments.approve');
 
-        Route::patch('/enrollments/{enrollment}/reject', [EnrollmentApprovalController::class, 'reject'])
+        Route::patch('/enrollments/{enrollment}/reject',
+            [EnrollmentApprovalController::class, 'reject'])
             ->name('enrollments.reject');
     });
 
@@ -104,13 +112,16 @@ Route::middleware(['auth', 'role:lecturer'])
         })->name('dashboard');
 
         // Course Management
-        Route::get('/courses', [CourseController::class, 'index'])
+        Route::get('/courses',
+            [CourseController::class, 'index'])
             ->name('courses.index');
 
-        Route::get('/courses/create', [CourseController::class, 'create'])
+        Route::get('/courses/create',
+            [CourseController::class, 'create'])
             ->name('courses.create');
 
-        Route::post('/courses', [CourseController::class, 'store'])
+        Route::post('/courses',
+            [CourseController::class, 'store'])
             ->name('courses.store');
 
         // Lecturer Learning Materials
@@ -139,20 +150,25 @@ Route::middleware(['auth', 'role:lecturer'])
             [AssignmentController::class, 'store'])
             ->name('assignments.store');
 
-        // Lecturer views student submissions
+        // Lecturer Views Student Submissions
         Route::get('/assignments/{assignment}/submissions',
             [LecturerSubmissionController::class, 'index'])
             ->name('submissions.index');
 
-        // Lecturer downloads submitted files
+        // Lecturer Downloads Student Submissions
         Route::get('/submissions/{submission}/download',
             [LecturerSubmissionController::class, 'download'])
             ->name('submissions.download');
 
-        // Lecturer grades student submissions
+        // Lecturer Grades Student Submissions
         Route::patch('/submissions/{submission}/grade',
             [LecturerSubmissionController::class, 'grade'])
             ->name('submissions.grade');
+
+        // Lecturer Student Progress Tracking
+        Route::get('/courses/{course}/progress',
+            [ProgressController::class, 'index'])
+            ->name('progress.index');
     });
 
 // STUDENT ROUTES
@@ -166,41 +182,42 @@ Route::middleware(['auth', 'role:student'])
             return view('dashboards.student');
         })->name('dashboard');
 
-        // Display approved courses
-        Route::get('/courses', [EnrollmentController::class, 'index'])
+        // Display Approved Courses
+        Route::get('/courses',
+            [EnrollmentController::class, 'index'])
             ->name('courses.index');
 
-        // Request enrollment in a course
+        // Request Course Enrollment
         Route::post('/courses/{course}/enroll',
             [EnrollmentController::class, 'store'])
             ->name('courses.enroll');
 
-        // Show approved enrolled courses
+        // Student My Classes
         Route::get('/my-classes',
             [EnrollmentController::class, 'myClasses'])
             ->name('classes.index');
 
-        // Student views learning materials
+        // Student Learning Materials
         Route::get('/courses/{course}/materials',
             [EnrollmentController::class, 'materials'])
             ->name('materials.index');
 
-        // Student views assignments
+        // Student Views Assignments
         Route::get('/courses/{course}/assignments',
             [StudentAssignmentController::class, 'index'])
             ->name('assignments.index');
 
-        // Student submits assignment
+        // Student Submits Assignment
         Route::post('/assignments/{assignment}/submit',
             [SubmissionController::class, 'store'])
             ->name('submissions.store');
 
-        // Student downloads PDF materials
+        // Student Downloads Learning Materials
         Route::get('/materials/{material}/download',
             [EnrollmentController::class, 'downloadMaterial'])
             ->name('materials.download');
 
-        // Student views PDF in browser
+        // Student Views PDF Materials
         Route::get('/materials/{material}/view',
             [EnrollmentController::class, 'viewMaterial'])
             ->name('materials.view');

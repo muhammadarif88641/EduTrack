@@ -16,9 +16,9 @@
             @endif
 
             <div class="mb-6 flex justify-between items-center">
-                <a href="{{ route('lecturer.courses.index') }}"
-                   class="text-blue-600 hover:underline">
-                    Back to Courses
+                <a href="{{ route('lecturer.progress.index', $course->id) }}"
+                class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    View Student Progress
                 </a>
 
                 <a href="{{ route('lecturer.assignments.create', $course) }}"
