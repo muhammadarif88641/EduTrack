@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Submission;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -25,9 +26,15 @@ class AssignmentController extends Controller
             ->latest()
             ->get();
 
+        $submissions = Submission::where('student_id', Auth::id())
+            ->whereIn('assignment_id', $assignments->pluck('id'))
+            ->get()
+            ->keyBy('assignment_id');
+
         return view('student.assignments.index', compact(
             'course',
-            'assignments'
+            'assignments',
+            'submissions'
         ));
     }
 }

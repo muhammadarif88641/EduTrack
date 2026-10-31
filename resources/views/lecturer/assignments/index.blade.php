@@ -54,6 +54,15 @@
                                         ? $assignment->due_date->format('d M Y, h:i A')
                                         : 'No due date' }}
                                 </p>
+
+                                
+                                    <div class="mt-4">
+                                        <a href="{{ route('lecturer.submissions.index', $assignment->id) }}"
+                                        class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                                            View Student Submissions
+                                        </a>
+                                    </div>
+
                             </div>
                         @endforeach
                     </div>

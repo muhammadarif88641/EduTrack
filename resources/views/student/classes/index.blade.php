@@ -65,6 +65,11 @@
                                         View Materials
                                     </a>
 
+                                    <a href="{{ route('student.assignments.index', $enrollment->course->id) }}"
+   class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg mt-4 ml-2 hover:bg-blue-700 transition">
+    View Assignments
+</a>
+
                                 </div>
 
                             @endif

@@ -43,11 +43,14 @@
                 </a>
 
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">Learning Materials</h3>
-                        <p>Upload weekly learning materials.</p>
-                    </div>
-
+                   <a href="{{ route('lecturer.courses.index') }}"
+   class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+    <h3 class="font-bold text-blue-700">Learning Materials</h3>
+    <p class="text-gray-600">Upload weekly learning materials.</p>
+    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
+        Manage Materials &rarr;
+    </span>
+</a>
                     
                 <a href="{{ route('lecturer.courses.index') }}"
                 class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">

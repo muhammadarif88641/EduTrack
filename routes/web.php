@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\EnrollmentApprovalController;
 use App\Http\Controllers\Lecturer\MaterialController;
 use App\Http\Controllers\Lecturer\AssignmentController;
 use App\Http\Controllers\Student\AssignmentController as StudentAssignmentController;
+use App\Http\Controllers\Student\SubmissionController;
+use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissionController;
 
 // Welcome Page
 Route::get('/', function () {
@@ -49,7 +51,6 @@ Route::middleware('auth')->group(function () {
 });
 
 // ADMIN ROUTES
-
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -80,7 +81,7 @@ Route::middleware(['auth', 'role:admin'])
         Route::patch('/courses/{course}/reject', [CourseApprovalController::class, 'reject'])
             ->name('courses.reject');
 
-            // Enrollment Approval
+        // Enrollment Approval
         Route::get('/enrollments', [EnrollmentApprovalController::class, 'index'])
             ->name('enrollments.index');
 
@@ -92,7 +93,6 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 // LECTURER ROUTES
-
 Route::middleware(['auth', 'role:lecturer'])
     ->prefix('lecturer')
     ->name('lecturer.')
@@ -112,23 +112,20 @@ Route::middleware(['auth', 'role:lecturer'])
 
         Route::post('/courses', [CourseController::class, 'store'])
             ->name('courses.store');
-        
+
         // Lecturer Learning Materials
-        // View materials for a course
         Route::get('/courses/{course}/materials',
             [MaterialController::class, 'index'])
             ->name('materials.index');
 
-        // Open upload material form
         Route::get('/courses/{course}/materials/create',
             [MaterialController::class, 'create'])
             ->name('materials.create');
 
-        // Save uploaded material
         Route::post('/courses/{course}/materials',
             [MaterialController::class, 'store'])
             ->name('materials.store');
-        
+
         // Lecturer Assignment Management
         Route::get('/courses/{course}/assignments',
             [AssignmentController::class, 'index'])
@@ -142,11 +139,23 @@ Route::middleware(['auth', 'role:lecturer'])
             [AssignmentController::class, 'store'])
             ->name('assignments.store');
 
+        // Lecturer views student submissions
+        Route::get('/assignments/{assignment}/submissions',
+            [LecturerSubmissionController::class, 'index'])
+            ->name('submissions.index');
 
+        // Lecturer downloads submitted files
+        Route::get('/submissions/{submission}/download',
+            [LecturerSubmissionController::class, 'download'])
+            ->name('submissions.download');
+
+        // Lecturer grades student submissions
+        Route::patch('/submissions/{submission}/grade',
+            [LecturerSubmissionController::class, 'grade'])
+            ->name('submissions.grade');
     });
 
 // STUDENT ROUTES
-
 Route::middleware(['auth', 'role:student'])
     ->prefix('student')
     ->name('student.')
@@ -162,35 +171,39 @@ Route::middleware(['auth', 'role:student'])
             ->name('courses.index');
 
         // Request enrollment in a course
-        Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])
+        Route::post('/courses/{course}/enroll',
+            [EnrollmentController::class, 'store'])
             ->name('courses.enroll');
 
-         // Show courses the student has successfully enrolled in
-        Route::get('/my-classes', [EnrollmentController::class, 'myClasses'])
+        // Show approved enrolled courses
+        Route::get('/my-classes',
+            [EnrollmentController::class, 'myClasses'])
             ->name('classes.index');
 
-        
         // Student views learning materials
         Route::get('/courses/{course}/materials',
             [EnrollmentController::class, 'materials'])
             ->name('materials.index');
-        
-        // Student views assignments for an enrolled course
+
+        // Student views assignments
         Route::get('/courses/{course}/assignments',
             [StudentAssignmentController::class, 'index'])
             ->name('assignments.index');
 
+        // Student submits assignment
+        Route::post('/assignments/{assignment}/submit',
+            [SubmissionController::class, 'store'])
+            ->name('submissions.store');
 
         // Student downloads PDF materials
         Route::get('/materials/{material}/download',
             [EnrollmentController::class, 'downloadMaterial'])
             ->name('materials.download');
-        
-        // Student views PDF directly in browser
+
+        // Student views PDF in browser
         Route::get('/materials/{material}/view',
             [EnrollmentController::class, 'viewMaterial'])
             ->name('materials.view');
-
     });
 
 // Laravel Authentication Routes
