@@ -39,174 +39,166 @@
                 </p>
 
                 <h3 class="text-xl font-semibold mb-4">
-                    Weekly Assignments
+                    Available Assignments
                 </h3>
 
-                @if($assignments->isEmpty())
+                @forelse ($assignments as $assignment)
+
+                    @php
+                        $submission = $submissions->get($assignment->id);
+
+                        $isLate = $assignment->due_date
+                            && now()->greaterThan($assignment->due_date);
+
+                        $submittedLate = $submission
+                            && $assignment->due_date
+                            && $submission->submitted_at
+                            && $submission->submitted_at->greaterThan($assignment->due_date);
+
+                        $isGraded = $submission
+                            && $submission->status === 'graded';
+                    @endphp
+
+                    <div class="border rounded-lg p-5 mb-4">
+
+                        <h4 class="text-lg font-bold text-blue-700">
+                            {{ $assignment->title }}
+                        </h4>
+
+                        <p class="text-gray-700 mt-3 whitespace-pre-line">
+                            {{ $assignment->instructions }}
+                        </p>
+
+                        <p class="mt-3 text-gray-600">
+                            Week {{ $assignment->week_number ?? 1 }}
+                        </p>
+
+                        <p class="mt-4">
+                            <strong>Maximum Marks:</strong>
+                            {{ $assignment->max_marks }}
+                        </p>
+
+                        <p class="mt-2">
+                            <strong>Due Date:</strong>
+                            {{ $assignment->due_date
+                                ? $assignment->due_date->format('d M Y, h:i A')
+                                : 'No due date' }}
+                        </p>
+
+                        <div class="mt-5 border-t pt-4">
+
+                            @if($submission)
+
+                                @if($submittedLate)
+                                    <p class="text-red-600 font-semibold">
+                                        Submission Status: Late Submission
+                                        @if($isGraded)
+                                            (Graded)
+                                        @endif
+                                    </p>
+                                @elseif($isGraded)
+                                    <p class="text-green-700 font-semibold">
+                                        Submission Status: Graded
+                                    </p>
+                                @else
+                                    <p class="text-green-600 font-semibold">
+                                        Submission Status: Submitted
+                                    </p>
+                                @endif
+
+                                <p class="text-gray-600 mt-2">
+                                    Submitted File:
+                                    {{ $submission->original_filename }}
+                                </p>
+
+                                <p class="text-gray-600 mt-2">
+                                    Submitted At:
+                                    {{ $submission->submitted_at->format('d M Y, h:i A') }}
+                                </p>
+
+                                @if($isGraded)
+                                    <p class="mt-3 font-semibold">
+                                        Marks:
+                                        {{ $submission->marks_obtained }}
+                                        / {{ $assignment->max_marks }}
+                                    </p>
+
+                                    <p class="mt-2">
+                                        Feedback:
+                                        {{ $submission->feedback ?: 'No feedback provided.' }}
+                                    </p>
+                                @endif
+
+                            @else
+
+                                @if($isLate)
+                                    <p class="text-red-600 font-semibold">
+                                        Status: Overdue - Not Submitted
+                                    </p>
+                                @else
+                                    <p class="text-yellow-700 font-semibold">
+                                        Status: Pending
+                                    </p>
+                                @endif
+
+                            @endif
+
+                            @if(!$isGraded)
+
+                                @if($isLate)
+                                    <p class="text-red-600 text-sm mt-4">
+                                        The deadline has passed. You can still submit,
+                                        but your submission will be marked as late.
+                                    </p>
+                                @endif
+
+                                <form method="POST"
+                                      action="{{ route('student.submissions.store', $assignment->id) }}"
+                                      enctype="multipart/form-data"
+                                      class="mt-4">
+
+                                    @csrf
+
+                                    <label class="block font-semibold mb-2">
+                                        Upload Assignment (PDF or Word)
+                                    </label>
+
+                                    <input type="file"
+                                           name="file"
+                                           accept=".pdf,.doc,.docx"
+                                           required
+                                           class="block w-full border rounded-lg p-2">
+
+                                    @error('file')
+                                        <p class="text-red-600 text-sm mt-2">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+
+                                    <button type="submit"
+                                            class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        {{ $submission ? 'Replace Submission' : 'Submit Assignment' }}
+                                    </button>
+
+                                    <p class="text-gray-500 text-sm mt-2">
+                                        Maximum file size: 10 MB
+                                    </p>
+
+                                </form>
+
+                            @endif
+
+                        </div>
+
+                    </div>
+
+                @empty
 
                     <p class="text-gray-500">
                         No assignments available for this course yet.
                     </p>
 
-                @else
-
-                    @php
-                        $weeklyAssignments = $assignments->groupBy('week_number');
-                    @endphp
-
-                    <div class="space-y-4">
-
-                        @for($week = 1; $week <= 14; $week++)
-
-                            <details class="border rounded-lg overflow-hidden"
-                                     {{ $week == 1 ? 'open' : '' }}>
-
-                                <summary class="bg-gray-100 p-4 font-bold cursor-pointer hover:bg-gray-200">
-                                    Week {{ $week }}
-                                    ({{ $weeklyAssignments->get($week, collect())->count() }} Assignments)
-                                </summary>
-
-                                <div class="p-4">
-
-                                    @forelse($weeklyAssignments->get($week, collect()) as $assignment)
-
-                                        @php
-                                            $submission = $submissions->get($assignment->id);
-
-                                            $isLate = $assignment->due_date
-                                                && now()->greaterThan($assignment->due_date);
-
-                                            $isGraded = $submission
-                                                && $submission->status === 'graded';
-                                        @endphp
-
-                                        <div class="border rounded-lg p-5 mb-4">
-
-                                            <h4 class="text-lg font-bold text-blue-700">
-                                                {{ $assignment->title }}
-                                            </h4>
-
-                                            <p class="text-gray-700 mt-3 whitespace-pre-line">{{ $assignment->instructions }}</p>
-
-                                            <p class="mt-4">
-                                                <strong>Maximum Marks:</strong>
-                                                {{ $assignment->max_marks }}
-                                            </p>
-
-                                            <p class="mt-2">
-                                                <strong>Due Date:</strong>
-                                                {{ $assignment->due_date
-                                                    ? $assignment->due_date->format('d M Y, h:i A')
-                                                    : 'No due date' }}
-                                            </p>
-
-                                            <div class="mt-5 border-t pt-4">
-
-                                                @if($submission)
-
-                                                    <p class="text-green-700 font-semibold">
-                                                        Submission Status:
-                                                        {{ ucfirst($submission->status) }}
-                                                    </p>
-
-                                                    <p class="text-gray-600 mt-2">
-                                                        Submitted File:
-                                                        {{ $submission->original_filename }}
-                                                    </p>
-
-                                                    <p class="text-gray-600 mt-2">
-                                                        Submitted At:
-                                                        {{ $submission->submitted_at->format('d M Y, h:i A') }}
-                                                    </p>
-
-                                                    @if($isGraded)
-
-                                                        <p class="mt-3 font-semibold">
-                                                            Marks:
-                                                            {{ $submission->marks_obtained }}
-                                                            / {{ $assignment->max_marks }}
-                                                        </p>
-
-                                                        <p class="mt-2">
-                                                            Feedback:
-                                                            {{ $submission->feedback ?: 'No feedback provided.' }}
-                                                        </p>
-
-                                                    @endif
-
-                                                @else
-
-                                                    <p class="text-red-600 font-semibold">
-                                                        Not Submitted
-                                                    </p>
-
-                                                @endif
-
-                                                @if(!$isLate && !$isGraded)
-
-                                                    <form method="POST"
-                                                          action="{{ route('student.submissions.store', $assignment->id) }}"
-                                                          enctype="multipart/form-data"
-                                                          class="mt-4">
-
-                                                        @csrf
-
-                                                        <label class="block font-semibold mb-2">
-                                                            Upload Assignment (PDF or Word)
-                                                        </label>
-
-                                                        <input type="file"
-                                                               name="file"
-                                                               accept=".pdf,.doc,.docx"
-                                                               required
-                                                               class="block w-full border rounded-lg p-2">
-
-                                                        @error('file')
-                                                            <p class="text-red-600 text-sm mt-2">
-                                                                {{ $message }}
-                                                            </p>
-                                                        @enderror
-
-                                                        <button type="submit"
-                                                                class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                                            {{ $submission ? 'Replace Submission' : 'Submit Assignment' }}
-                                                        </button>
-
-                                                        <p class="text-gray-500 text-sm mt-2">
-                                                            Maximum file size: 10 MB
-                                                        </p>
-
-                                                    </form>
-
-                                                @elseif($isLate && !$submission)
-
-                                                    <p class="text-red-600 mt-3">
-                                                        Submission deadline has passed.
-                                                    </p>
-
-                                                @endif
-
-                                            </div>
-
-                                        </div>
-
-                                    @empty
-
-                                        <p class="text-gray-500">
-                                            No assignments for this week.
-                                        </p>
-
-                                    @endforelse
-
-                                </div>
-
-                            </details>
-
-                        @endfor
-
-                    </div>
-
-                @endif
+                @endforelse
 
             </div>
 

@@ -9,9 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <div class="mb-6">
-                <a href="{{ route('lecturer.courses.index') }}"
-                   class="text-blue-600 hover:underline">
-                    Back to My Courses
+               <a href="{{ route('lecturer.courses.select-feature', 'progress') }}"
+                    class="inline-block bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                        &larr; Back to Course Selection
                 </a>
             </div>
 

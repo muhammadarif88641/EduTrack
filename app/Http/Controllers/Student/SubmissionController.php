@@ -30,14 +30,6 @@ class SubmissionController extends Controller
             abort(403, 'You are not enrolled in this course.');
         }
 
-        $request->validate([
-            'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
-        ]);
-
-        if ($assignment->due_date && now()->greaterThan($assignment->due_date)) {
-            return back()->with('error', 'The assignment deadline has passed.');
-        }
-
         $existing = Submission::where('assignment_id', $assignment->id)
             ->where('student_id', Auth::id())
             ->first();
@@ -46,30 +38,52 @@ class SubmissionController extends Controller
             return back()->with('error', 'This assignment has already been graded.');
         }
 
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+        ]);
+
         $file = $request->file('file');
 
         $path = $file->store('submissions', 'local');
 
-        if ($existing) {
-            Storage::disk('local')->delete($existing->file_path);
+        $submittedAt = now();
 
-            $existing->update([
-                'file_path' => $path,
-                'original_filename' => $file->getClientOriginalName(),
-                'submitted_at' => now(),
-                'status' => 'submitted',
-                'marks_obtained' => null,
-                'feedback' => null,
-            ]);
-        } else {
-            Submission::create([
-                'assignment_id' => $assignment->id,
-                'student_id' => Auth::id(),
-                'file_path' => $path,
-                'original_filename' => $file->getClientOriginalName(),
-                'submitted_at' => now(),
-                'status' => 'submitted',
-            ]);
+        try {
+            if ($existing) {
+                $oldPath = $existing->file_path;
+
+                $existing->update([
+                    'file_path' => $path,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'submitted_at' => $submittedAt,
+                    'status' => 'submitted',
+                    'marks_obtained' => null,
+                    'feedback' => null,
+                ]);
+
+                if ($oldPath) {
+                    Storage::disk('local')->delete($oldPath);
+                }
+            } else {
+                Submission::create([
+                    'assignment_id' => $assignment->id,
+                    'student_id' => Auth::id(),
+                    'file_path' => $path,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'submitted_at' => $submittedAt,
+                    'status' => 'submitted',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Storage::disk('local')->delete($path);
+            throw $e;
+        }
+
+        $isLate = $assignment->due_date
+            && $submittedAt->greaterThan($assignment->due_date);
+
+        if ($isLate) {
+            return back()->with('success', 'Late assignment submitted successfully!');
         }
 
         return back()->with('success', 'Assignment submitted successfully!');

@@ -24,56 +24,69 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    
-                <a href="{{ route('lecturer.courses.index') }}"
-                class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+                    <a href="{{ route('lecturer.courses.index') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition">
 
-                    <h3 class="font-bold text-blue-700">
-                        My Courses
-                    </h3>
+                        <h3 class="font-bold text-blue-700 text-lg">
+                            My Courses
+                        </h3>
 
-                    <p class="text-gray-600">
-                        Create and manage your courses.
-                    </p>
+                        <p class="text-gray-600 mt-2">
+                            Create and manage your courses.
+                        </p>
 
-                    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
-                        Manage Courses →
-                    </span>
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            Manage Courses &rarr;
+                        </span>
+                    </a>
 
-                </a>
+                    <a href="{{ route('lecturer.courses.select-feature', 'materials') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition">
 
+                        <h3 class="font-bold text-blue-700 text-lg">
+                            Learning Materials
+                        </h3>
 
-                   <a href="{{ route('lecturer.courses.index') }}"
-   class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
-    <h3 class="font-bold text-blue-700">Learning Materials</h3>
-    <p class="text-gray-600">Upload weekly learning materials.</p>
-    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
-        Manage Materials &rarr;
-    </span>
-</a>
-                    
-                <a href="{{ route('lecturer.courses.index') }}"
-                class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+                        <p class="text-gray-600 mt-2">
+                            Upload and manage weekly learning materials.
+                        </p>
 
-                    <h3 class="font-bold text-blue-700">
-                        Assignments
-                    </h3>
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            Manage Materials &rarr;
+                        </span>
+                    </a>
 
-                    <p class="text-gray-600">
-                        Create tasks and set deadlines.
-                    </p>
+                    <a href="{{ route('lecturer.courses.select-feature', 'assignments') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition">
 
-                    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
-                        Manage Assignments &rarr;
-                    </span>
+                        <h3 class="font-bold text-blue-700 text-lg">
+                            Assignments
+                        </h3>
 
-                </a>
+                        <p class="text-gray-600 mt-2">
+                            Create assignments and set deadlines.
+                        </p>
 
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            Manage Assignments &rarr;
+                        </span>
+                    </a>
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">Student Progress</h3>
-                        <p>Track student progress and grades.</p>
-                    </div>
+                    <a href="{{ route('lecturer.courses.select-feature', 'progress') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition">
+
+                        <h3 class="font-bold text-blue-700 text-lg">
+                            Student Progress
+                        </h3>
+
+                        <p class="text-gray-600 mt-2">
+                            Monitor student submissions and completion percentages.
+                        </p>
+
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            View Student Progress &rarr;
+                        </span>
+                    </a>
 
                 </div>
 

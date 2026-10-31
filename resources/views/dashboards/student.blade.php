@@ -1,3 +1,4 @@
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">
@@ -7,6 +8,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
             <div class="bg-white shadow-sm rounded-lg p-6">
 
                 <h1 class="text-2xl font-bold mb-4">
@@ -23,56 +25,75 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    
-                <a href="{{ route('student.courses.index') }}"
-                class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+                    <a href="{{ route('student.courses.index') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition duration-200">
 
-                    <h3 class="font-bold text-blue-700">
-                        Find Class
-                    </h3>
+                        <h3 class="font-bold text-blue-700">
+                            Find Class
+                        </h3>
 
-                    <p class="text-gray-600">
-                        Search for courses and request enrollment.
-                    </p>
+                        <p class="text-gray-600 mt-2">
+                            Search for courses and request enrollment.
+                        </p>
 
-                    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
-                        Browse Available Courses →
-                    </span>
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            Browse Available Courses &rarr;
+                        </span>
+                    </a>
 
-                </a>
+                    <a href="{{ route('student.classes.index') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition duration-200">
 
+                        <h3 class="font-bold text-blue-700">
+                            My Classes
+                        </h3>
 
-                    
-                <a href="{{ route('student.classes.index') }}"
-                class="block border rounded-lg p-4 hover:bg-blue-50 hover:border-blue-500 transition duration-200 cursor-pointer">
+                        <p class="text-gray-600 mt-2">
+                            View courses you have joined.
+                        </p>
 
-                    <h3 class="font-bold text-blue-700">
-                        My Classes
-                    </h3>
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            View My Classes &rarr;
+                        </span>
+                    </a>
 
-                    <p class="text-gray-600">
-                        View courses you have joined.
-                    </p>
+                    <a href="{{ route('student.assignments.overview') }}"
+                       class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition duration-200">
 
-                    <span class="text-blue-600 text-sm font-semibold mt-2 inline-block">
-                        View My Classes →
-                    </span>
+                        <h3 class="font-bold text-blue-700">
+                            My Assignments
+                        </h3>
 
-                </a>
+                        <p class="text-gray-600 mt-2">
+                            View assignments, deadlines and submission status from all courses.
+                        </p>
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">My Assignments</h3>
-                        <p>View tasks, deadlines and submissions.</p>
-                    </div>
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            View My Assignments &rarr;
+                        </span>
+                    </a>
 
-                    <div class="border rounded-lg p-4">
-                        <h3 class="font-bold">My Progress</h3>
-                        <p>Track your completed tasks and marks.</p>
-                    </div>
+                   <a href="{{ route('student.progress.index') }}"
+                    class="block border rounded-lg p-5 hover:bg-blue-50 hover:border-blue-500 transition duration-200">
+
+                        <h3 class="font-bold text-blue-700">
+                            My Progress
+                        </h3>
+
+                        <p class="text-gray-600 mt-2">
+                            Track completed assignments, marks and progress across all courses.
+                        </p>
+
+                        <span class="text-blue-600 text-sm font-semibold mt-3 inline-block">
+                            View My Progress &rarr;
+                        </span>
+
+                    </a>
 
                 </div>
 
             </div>
+
         </div>
     </div>
 </x-app-layout>

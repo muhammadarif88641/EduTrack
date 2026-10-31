@@ -64,19 +64,37 @@
                                     {{ $submission->submitted_at->format('d M Y, h:i A') }}
                                 </p>
 
-                                <p class="mt-2">
-                                    <strong>Status:</strong>
+                                @php
+    $submittedLate = $assignment->due_date
+        && $submission->submitted_at
+        && $submission->submitted_at->greaterThan($assignment->due_date);
+@endphp
 
-                                    @if ($submission->status === 'graded')
-                                        <span class="text-green-600 font-semibold">
-                                            Graded
-                                        </span>
-                                    @else
-                                        <span class="text-orange-600 font-semibold">
-                                            Submitted
-                                        </span>
-                                    @endif
-                                </p>
+                                    <p class="mt-2">
+                                        <strong>Status:</strong>
+
+                                        @if ($submittedLate)
+
+                                            <span class="text-red-600 font-semibold">
+                                                {{ $submission->status === 'graded'
+                                                    ? 'Graded - Late Submission'
+                                                    : 'Late Submission' }}
+                                            </span>
+
+                                        @elseif ($submission->status === 'graded')
+
+                                            <span class="text-green-600 font-semibold">
+                                                Graded
+                                            </span>
+
+                                        @else
+
+                                            <span class="text-green-600 font-semibold">
+                                                Submitted
+                                            </span>
+
+                                        @endif
+                                    </p>
 
                                 <div class="mt-4">
                                     <a href="{{ route('lecturer.submissions.download', $submission->id) }}"

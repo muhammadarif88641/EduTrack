@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-    // Display courses created by this lecturer
     public function index(): View
     {
         $courses = Course::where('lecturer_id', Auth::id())
@@ -21,13 +20,29 @@ class CourseController extends Controller
         return view('lecturer.courses.index', compact('courses'));
     }
 
-    // Display the Create Course form
+    public function selectFeature(string $feature): View
+    {
+        abort_unless(
+            in_array($feature, ['materials', 'assignments', 'progress'], true),
+            404
+        );
+
+        $courses = Course::where('lecturer_id', Auth::id())
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        return view('lecturer.courses.select-feature', compact(
+            'courses',
+            'feature'
+        ));
+    }
+
     public function create(): View
     {
         return view('lecturer.courses.create');
     }
 
-    // Save a new course into the database
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

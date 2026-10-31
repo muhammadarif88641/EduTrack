@@ -14,6 +14,7 @@ use App\Http\Controllers\Student\AssignmentController as StudentAssignmentContro
 use App\Http\Controllers\Student\SubmissionController;
 use App\Http\Controllers\Lecturer\SubmissionController as LecturerSubmissionController;
 use App\Http\Controllers\Lecturer\ProgressController;
+use App\Http\Controllers\Student\ProgressController as StudentProgressController;
 
 // Welcome Page
 Route::get('/', function () {
@@ -105,6 +106,11 @@ Route::middleware(['auth', 'role:lecturer'])
     ->prefix('lecturer')
     ->name('lecturer.')
     ->group(function () {
+        
+        Route::get('/select-course/{feature}',
+        [CourseController::class, 'selectFeature'])
+        ->whereIn('feature', ['materials', 'assignments', 'progress'])
+        ->name('courses.select-feature');
 
         // Lecturer Dashboard
         Route::get('/dashboard', function () {
@@ -176,6 +182,14 @@ Route::middleware(['auth', 'role:student'])
     ->prefix('student')
     ->name('student.')
     ->group(function () {
+
+    Route::get('/my-progress',
+    [StudentProgressController::class, 'index'])
+    ->name('progress.index');
+
+        Route::get('/my-assignments',
+    [StudentAssignmentController::class, 'overview'])
+    ->name('assignments.overview');
 
         // Student Dashboard
         Route::get('/dashboard', function () {
