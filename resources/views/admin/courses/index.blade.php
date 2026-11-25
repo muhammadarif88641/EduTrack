@@ -1,178 +1,305 @@
 <x-app-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Course Approval Management
+        <h2 class="font-semibold text-xl text-gray-800">
+            Course Management
         </h2>
     </x-slot>
 
     @php
-        $activeTab = request('tab', 'pending');
+        $tab = request('tab', 'pending');
 
-        if (!in_array($activeTab, ['pending', 'approved', 'rejected'])) {
-            $activeTab = 'pending';
-        }
-
-        $tabs = [
-            'pending' => [
-                'label' => 'Pending',
-                'count' => $pendingCourses->count(),
-            ],
-            'approved' => [
-                'label' => 'Approved',
-                'count' => $approvedCourses->count(),
-            ],
-            'rejected' => [
-                'label' => 'Rejected',
-                'count' => $rejectedCourses->count(),
-            ],
-        ];
-
-        $courses = match ($activeTab) {
+        $courses = match ($tab) {
             'approved' => $approvedCourses,
             'rejected' => $rejectedCourses,
             default => $pendingCourses,
         };
     @endphp
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="p-6 max-w-7xl mx-auto space-y-6">
 
-            <!-- Back Button -->
-            <a href="{{ route('admin.dashboard') }}"
-               class="inline-block mb-6 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700">
-                &larr; Back to Admin Dashboard
+        <div class="flex flex-wrap justify-between items-center gap-4">
+
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    Manage Courses
+                </h1>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Approve, reject and archive academic courses.
+                </p>
+            </div>
+
+            <a href="{{ route('admin.archive.index') }}"
+               class="bg-slate-800 text-white px-5 py-3 rounded-lg font-semibold hover:bg-slate-700">
+
+                Archived Courses &rarr;
+
             </a>
 
-            @if (session('success'))
-                <div class="mb-6 p-4 bg-green-100 text-green-800 rounded-lg">
-                    {{ session('success') }}
-                </div>
-            @endif
+        </div>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+        @if (session('success'))
 
-                <h3 class="text-2xl font-bold mb-2">
-                    Manage Course Approvals
-                </h3>
+            <div class="bg-green-100 text-green-800 rounded-lg p-4">
+                {{ session('success') }}
+            </div>
 
-                <p class="text-gray-600 mb-6">
-                    Review courses created by lecturers.
-                    Approve or reject courses before students can enroll.
+        @endif
+
+        @if (session('error'))
+
+            <div class="bg-red-100 text-red-800 rounded-lg p-4">
+                {{ session('error') }}
+            </div>
+
+        @endif
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+            <div class="bg-white border rounded-xl p-5 shadow-sm">
+
+                <p class="text-sm text-gray-500">
+                    Pending Courses
                 </p>
 
-                <!-- Course Status Tabs -->
-                <div class="flex flex-wrap gap-3 mb-6 border-b pb-4">
-                    @foreach ($tabs as $key => $tab)
-                        <a href="{{ route('admin.courses.index', ['tab' => $key]) }}"
-                           class="px-4 py-2 rounded-lg text-sm font-semibold transition
-                           {{ $activeTab === $key
-                               ? 'bg-gray-800 text-white'
-                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
-
-                            {{ $tab['label'] }} ({{ $tab['count'] }})
-
-                        </a>
-                    @endforeach
-                </div>
-
-                <!-- Courses Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-left">
-                        <thead>
-                            <tr class="bg-gray-100">
-                                <th class="p-3">Course Code</th>
-                                <th class="p-3">Course Name</th>
-                                <th class="p-3">Lecturer</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @forelse ($courses as $course)
-                                <tr class="border-b">
-                                    <td class="p-3">
-                                        {{ $course->course_code }}
-                                    </td>
-
-                                    <td class="p-3">
-                                        {{ $course->course_name }}
-                                    </td>
-
-                                    <td class="p-3">
-                                        {{ $course->lecturer?->name ?? 'Unknown' }}
-                                    </td>
-
-                                    <td class="p-3">
-                                        @if ($course->status === 'approved')
-                                            <span class="text-green-700 font-semibold">
-                                                Approved
-                                            </span>
-                                        @elseif ($course->status === 'rejected')
-                                            <span class="text-red-700 font-semibold">
-                                                Rejected
-                                            </span>
-                                        @else
-                                            <span class="text-yellow-700 font-semibold">
-                                                Pending
-                                            </span>
-                                        @endif
-                                    </td>
-
-                                    <td class="p-3">
-                                        <div class="flex flex-wrap gap-2">
-
-                                            @if (in_array($course->status, ['pending', 'rejected']))
-                                                <form method="POST"
-                                                      action="{{ route('admin.courses.approve', $course) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-
-                                                    <button type="submit"
-                                                        class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                                        {{ $course->status === 'rejected'
-                                                            ? 'Approve Again'
-                                                            : 'Approve' }}
-                                                    </button>
-                                                </form>
-                                            @endif
-
-                                            @if ($course->status === 'pending')
-                                                <form method="POST"
-                                                      action="{{ route('admin.courses.reject', $course) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-
-                                                    <button type="submit"
-                                                        onclick="return confirm('Reject this course?')"
-                                                        class="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                                                        Reject
-                                                    </button>
-                                                </form>
-                                            @endif
-
-                                            @if ($course->status === 'approved')
-                                                <span class="text-gray-500">
-                                                    No action needed
-                                                </span>
-                                            @endif
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5"
-                                        class="p-6 text-center text-gray-500">
-                                        No {{ $activeTab }} courses found.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                <h2 class="text-3xl font-bold text-yellow-600 mt-2">
+                    {{ $pendingCourses->count() }}
+                </h2>
 
             </div>
+
+            <div class="bg-white border rounded-xl p-5 shadow-sm">
+
+                <p class="text-sm text-gray-500">
+                    Approved Courses
+                </p>
+
+                <h2 class="text-3xl font-bold text-green-600 mt-2">
+                    {{ $approvedCourses->count() }}
+                </h2>
+
+            </div>
+
+            <div class="bg-white border rounded-xl p-5 shadow-sm">
+
+                <p class="text-sm text-gray-500">
+                    Rejected Courses
+                </p>
+
+                <h2 class="text-3xl font-bold text-red-600 mt-2">
+                    {{ $rejectedCourses->count() }}
+                </h2>
+
+            </div>
+
         </div>
+
+        <div class="bg-white border rounded-xl p-5">
+
+            <div class="flex flex-wrap gap-3">
+
+                @foreach ([
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'rejected' => 'Rejected'
+                ] as $key => $label)
+
+                    <a href="{{ route('admin.courses.index', ['tab' => $key]) }}"
+                       class="px-5 py-2 rounded-lg text-sm font-semibold transition
+                       {{ $tab === $key
+                           ? 'bg-blue-600 text-white'
+                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+
+                        {{ $label }}
+
+                    </a>
+
+                @endforeach
+
+            </div>
+
+        </div>
+
+        <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+
+            <div class="p-5 border-b">
+
+                <h2 class="text-lg font-bold text-gray-800">
+                    {{ ucfirst($tab) }} Courses
+                </h2>
+
+            </div>
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-sm text-left">
+
+                    <thead class="bg-slate-900 text-white">
+
+                        <tr>
+                            <th class="p-4">No.</th>
+                            <th class="p-4">Course Code</th>
+                            <th class="p-4">Course Name</th>
+                            <th class="p-4">Lecturer</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200">
+
+                        @forelse ($courses as $course)
+
+                            <tr class="hover:bg-gray-50">
+
+                                <td class="p-4">
+                                    {{ $loop->iteration }}
+                                </td>
+
+                                <td class="p-4 font-semibold text-blue-600">
+                                    {{ $course->course_code }}
+                                </td>
+
+                                <td class="p-4">
+
+                                    <p class="font-semibold text-gray-800">
+                                        {{ $course->course_name }}
+                                    </p>
+
+                                    <p class="text-xs text-gray-500 mt-1">
+
+                                        {{ \Illuminate\Support\Str::limit(
+                                            $course->description ?? '',
+                                            80
+                                        ) }}
+
+                                    </p>
+
+                                </td>
+
+                                <td class="p-4">
+                                    {{ $course->lecturer?->name ?? 'Not available' }}
+                                </td>
+
+                                <td class="p-4">
+
+                                    @php
+                                        $statusClass = match ($course->status) {
+                                            'approved' => 'bg-green-100 text-green-700',
+                                            'pending' => 'bg-yellow-100 text-yellow-700',
+                                            'rejected' => 'bg-red-100 text-red-700',
+                                            default => 'bg-gray-100 text-gray-700',
+                                        };
+                                    @endphp
+
+                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold {{ $statusClass }}">
+
+                                        {{ ucfirst($course->status) }}
+
+                                    </span>
+
+                                </td>
+
+                                <td class="p-4">
+
+                                    <div class="flex flex-wrap gap-2">
+
+                                        @if ($course->status === 'pending' || $course->status === 'rejected')
+
+                                            <form method="POST"
+                                                  action="{{ route('admin.courses.approve', $course->id) }}"
+                                                  onsubmit="return confirm('Approve this course?');">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit"
+                                                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+
+                                                    Approve
+
+                                                </button>
+
+                                            </form>
+
+                                        @endif
+
+                                        @if ($course->status === 'pending')
+
+                                            <form method="POST"
+                                                  action="{{ route('admin.courses.reject', $course->id) }}"
+                                                  onsubmit="return confirm('Reject this course?');">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit"
+                                                        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+
+                                                    Reject
+
+                                                </button>
+
+                                            </form>
+
+                                        @endif
+
+                                        @if ($course->status === 'approved')
+
+                                            <form method="POST"
+                                                  action="{{ route('admin.archive.store', $course->id) }}"
+                                                  onsubmit="return confirm('Archive this course? All academic records will be preserved, but further modifications will be blocked until the course is restored.');">
+
+                                                @csrf
+                                                @method('PATCH')
+
+                                                <button type="submit"
+                                                        class="bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-700">
+
+                                                    Archive Course
+
+                                                </button>
+
+                                            </form>
+
+                                        @endif
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td colspan="6" class="p-12 text-center">
+
+                                    <h2 class="text-lg font-semibold text-gray-800">
+                                        No Courses Found
+                                    </h2>
+
+                                    <p class="text-gray-500 mt-2">
+                                        There are no courses in this category.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
     </div>
+
 </x-app-layout>

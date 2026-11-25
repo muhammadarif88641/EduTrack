@@ -13,6 +13,18 @@
             &larr; Back to My Courses
         </a>
 
+        @if(session('success'))
+            <div class="bg-green-100 text-green-800 p-4 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 text-red-800 p-4 rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="bg-slate-900 text-white rounded-xl p-6">
 
             <p class="text-blue-300 text-sm font-semibold">
@@ -100,14 +112,14 @@
             </div>
 
             <progress
-                    value="{{ $progress }}"
-                    max="100"
-                    class="w-full h-4 rounded-full overflow-hidden accent-green-500">
+                value="{{ $progress }}"
+                max="100"
+                class="w-full h-4 rounded-full overflow-hidden accent-green-500">
             </progress>
 
             <p class="text-sm text-gray-500 mt-3">
 
-                @if ($totalAssignments > 0)
+                @if($totalAssignments > 0)
 
                     You have submitted {{ $completedAssignments }}
                     out of {{ $totalAssignments }} assignments.
@@ -134,7 +146,7 @@
 
         </div>
 
-        @foreach ($weeks as $week)
+        @foreach($weeks as $week)
 
             @php
                 $weekMaterials = $weeklyMaterials->get($week, collect());
@@ -159,7 +171,7 @@
 
                 <div class="border-t p-5 space-y-4">
 
-                    @if ($weekMaterials->isEmpty() && $weekAssignments->isEmpty())
+                    @if($weekMaterials->isEmpty() && $weekAssignments->isEmpty())
 
                         <p class="text-sm text-gray-500">
                             No learning content available for this week.
@@ -167,7 +179,7 @@
 
                     @endif
 
-                    @foreach ($weekMaterials as $material)
+                    @foreach($weekMaterials as $material)
 
                         <div class="bg-blue-50 border border-blue-100 rounded-lg p-4">
 
@@ -189,7 +201,7 @@
 
                             <div class="flex flex-wrap gap-2 mt-4">
 
-                                @if (strtolower(pathinfo($material->original_filename ?? $material->file_path, PATHINFO_EXTENSION)) === 'pdf')
+                                @if(strtolower(pathinfo($material->original_filename ?? $material->file_path, PATHINFO_EXTENSION)) === 'pdf')
 
                                     <a href="{{ route('student.materials.view', $material->id) }}"
                                        target="_blank"
@@ -211,39 +223,44 @@
 
                     @endforeach
 
-                    @foreach ($weekAssignments as $assignment)
+                    @foreach($weekAssignments as $assignment)
 
                         @php
+
                             $submission = $submissions->get($assignment->id);
 
-                            $isOverdue = !$submission
-                                && $assignment->due_date
-                                && now()->gt(\Carbon\Carbon::parse($assignment->due_date));
+                            $isOverdue = $assignment->due_date
+                                && \Carbon\Carbon::parse($assignment->due_date)->lte(now());
+
+                            $canWithdraw = $submission
+                                && $submission->status === 'submitted'
+                                && $submission->marks_obtained === null
+                                && $submission->feedback === null
+                                && !$isOverdue;
+
                         @endphp
 
                         <div class="bg-white border rounded-lg p-5">
 
-                            <div class="flex flex-wrap justify-between items-start gap-3">
+                            <p class="text-xs font-semibold text-blue-600 uppercase">
+                                Assignment
+                            </p>
 
-                                <div>
+                            <div class="flex flex-wrap justify-between items-center gap-3 mt-2">
 
-                                    <p class="text-xs font-semibold text-blue-600 uppercase">
-                                        Assignment
-                                    </p>
+                                <h3 class="font-bold text-gray-800">
+                                    {{ $assignment->title }}
+                                </h3>
 
-                                    <h3 class="font-bold text-gray-800 mt-1">
-                                        {{ $assignment->title }}
-                                    </h3>
-
-                                </div>
-
-                                @if ($submission)
+                                @if($submission)
 
                                     <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                                        Submitted
+
+                                        {{ $submission->marks_obtained !== null ? 'Graded' : 'Submitted' }}
+
                                     </span>
 
-                                @elseif ($isOverdue)
+                                @elseif($isOverdue)
 
                                     <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
                                         Overdue
@@ -281,7 +298,7 @@
 
                             </div>
 
-                            @if ($submission)
+                            @if($submission)
 
                                 <div class="mt-4 bg-gray-50 border rounded-lg p-4">
 
@@ -298,7 +315,7 @@
 
                                     </p>
 
-                                    @if ($assignment->due_date && \Carbon\Carbon::parse($submission->submitted_at)->gt(\Carbon\Carbon::parse($assignment->due_date)))
+                                    @if($assignment->due_date && \Carbon\Carbon::parse($submission->submitted_at)->gt(\Carbon\Carbon::parse($assignment->due_date)))
 
                                         <p class="text-sm font-semibold text-red-600 mt-2">
                                             Late Submission
@@ -306,7 +323,7 @@
 
                                     @endif
 
-                                    @if ($submission->marks_obtained !== null)
+                                    @if($submission->marks_obtained !== null)
 
                                         <p class="text-xl font-bold text-green-600 mt-3">
 
@@ -337,12 +354,45 @@
 
                             @endif
 
-                            <a href="{{ route('student.assignments.index', $course->id) }}"
-                               class="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
+                            <div class="flex flex-wrap gap-3 mt-4">
 
-                                {{ $submission ? 'Manage Submission' : 'Open Assignment' }}
+                                <a href="{{ route('student.assignments.index', $course->id) }}"
+                                   class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
 
-                            </a>
+                                    {{ $submission ? 'Manage Submission' : 'Open Assignment' }}
+
+                                </a>
+
+                                @if($canWithdraw)
+
+                                    <form method="POST"
+                                          action="{{ route('student.submissions.destroy', $submission->id) }}"
+                                          onsubmit="return confirm('Withdraw this submission? You will need to submit your assignment again.');">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-700">
+
+                                            Withdraw Submission
+
+                                        </button>
+
+                                    </form>
+
+                                @endif
+
+                            </div>
+
+                            @if($canWithdraw)
+
+                                <p class="text-xs text-gray-500 mt-3">
+                                    You can withdraw your submission before the deadline
+                                    if it has not been reviewed or graded.
+                                </p>
+
+                            @endif
 
                         </div>
 

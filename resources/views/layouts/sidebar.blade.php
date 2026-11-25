@@ -15,6 +15,11 @@
                 'active' => request()->routeIs('admin.students.*'),
             ],
             [
+                'label' => 'User Management',
+                'url' => route('admin.users.index'),
+                'active' => request()->routeIs('admin.users.*'),
+            ],
+            [
                 'label' => 'Course Management',
                 'url' => route('admin.courses.index'),
                 'active' => request()->routeIs('admin.courses.*'),
@@ -23,6 +28,16 @@
                 'label' => 'Enrolments',
                 'url' => route('admin.enrollments.index'),
                 'active' => request()->routeIs('admin.enrollments.*'),
+            ],
+            [
+                'label' => 'Academic Reports',
+                'url' => route('admin.reports.index'),
+                'active' => request()->routeIs('admin.reports.*'),
+            ],
+            [
+                'label' => 'Archived Courses',
+                'url' => route('admin.archive.index'),
+                'active' => request()->routeIs('admin.archive.*'),
             ],
         ],
 
@@ -61,6 +76,16 @@
                         request()->routeIs('lecturer.courses.select-feature')
                         && request()->route('feature') === 'progress'
                     ),
+            ],
+            [
+                'label' => 'Academic Reports',
+                'url' => route('lecturer.reports.index'),
+                'active' => request()->routeIs('lecturer.reports.*'),
+            ],
+            [
+                'label' => 'Archived Courses',
+                'url' => route('lecturer.archive.index'),
+                'active' => request()->routeIs('lecturer.archive.*'),
             ],
         ],
 
