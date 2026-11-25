@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -18,6 +19,57 @@ class CourseController extends Controller
             ->get();
 
         return view('lecturer.courses.index', compact('courses'));
+    }
+
+    public function show(Course $course): View
+    {
+        abort_unless(
+            $course->lecturer_id == Auth::id(),
+            403
+        );
+
+        abort_unless(
+            $course->status === 'approved',
+            403,
+            'This course is not active.'
+        );
+
+        $materials = DB::table('materials')
+            ->where('course_id', $course->id)
+            ->orderBy('week_number')
+            ->get();
+
+        $assignments = DB::table('assignments')
+            ->where('course_id', $course->id)
+            ->orderBy('week_number')
+            ->get();
+
+        $studentCount = DB::table('enrollments')
+            ->where('course_id', $course->id)
+            ->where('status', 'approved')
+            ->distinct()
+            ->count('student_id');
+
+        $weeks = collect(range(1, 14))
+            ->merge($materials->pluck('week_number'))
+            ->merge($assignments->pluck('week_number'))
+            ->unique()
+            ->sort()
+            ->values();
+
+        $weeklyMaterials = $materials->groupBy('week_number');
+
+        $weeklyAssignments = $assignments->groupBy('week_number');
+
+        return view('lecturer.courses.show', compact(
+            'course',
+            'materials',
+            'assignments',
+            'studentCount',
+            'weeks',
+            'weeklyMaterials',
+            'weeklyAssignments'
+        ));
     }
 
     public function selectFeature(string $feature): View

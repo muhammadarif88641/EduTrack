@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Student\CourseController as StudentCourseController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -126,6 +127,11 @@ Route::middleware(['auth', 'role:lecturer'])
             [CourseController::class, 'create'])
             ->name('courses.create');
 
+        Route::get('/courses/{course}',
+            [CourseController::class, 'show'])
+            ->whereNumber('course')
+            ->name('courses.show');
+
         Route::post('/courses',
             [CourseController::class, 'store'])
             ->name('courses.store');
@@ -210,6 +216,11 @@ Route::middleware(['auth', 'role:student'])
         Route::get('/my-classes',
             [EnrollmentController::class, 'myClasses'])
             ->name('classes.index');
+
+        Route::get('/courses/{course}',
+            [StudentCourseController::class, 'show'])
+            ->whereNumber('course')
+            ->name('courses.show');
 
         // Student Learning Materials
         Route::get('/courses/{course}/materials',
